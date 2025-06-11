@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Finder</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script
+    async
+    crossorigin="anonymous"
+    data-clerk-publishable-key="pk_test_ZnVua3ktbWFybW90LTYzLmNsZXJrLmFjY291bnRzLmRldiQ"
+    src="https://funky-marmot-63.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js"
+  ></script>
+
+  <script>
+    window.addEventListener('load', async () => {
+      await Clerk.load({ frontendApi: 'https://funky-marmot-63.clerk.accounts.dev' });
+
+      // if NOT signed in, kick back to login
+      if (!Clerk.user) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // otherwise mount the UserButton for sign-out/account menu
+      const container = document.getElementById('user-menu');
+      container.innerHTML = '<div id="user-button"></div>';
+      Clerk.mountUserButton(document.getElementById('user-button'));
+    });
+  </script>
+    
+</head>
+<body>
+<header class="header" style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 70px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+">
+  <div id="user-menu" style="
+      font-size: 1.2rem;
+      color: #fff;
+      margin-right: 2rem;
+  ">
+    <!-- user menu content -->
+  </div>
+
+  <a href="#" class="logo" style="
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+  ">
+    <span style="/* leave exactly as-is */"></span>event
+  </a>
+
+  <nav class="navbar" style="
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-grow: 1;
+      justify-content: center;
+  ">
+    <a href="#home" style="
+        font-size: 1.2rem;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 0.75rem 1rem;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 12px;
+        transition: background 0.3s;
+    ">Home</a>
+
+    <a href="#service" style="
+        font-size: 1.2rem;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 0.75rem 1rem;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 12px;
+        transition: background 0.3s;
+    ">Upcoming Events</a>
+
+    <a href="#gallery" style="
+        font-size: 1.2rem;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 0.75rem 1rem;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 12px;
+        transition: background 0.3s;
+    ">Featured</a>
+
+    <a href="create-event.html" style="
+        font-size: 1.2rem;
+        color: #00E5FF;
+        text-decoration: none;
+        padding: 0.75rem 1rem;
+        background: rgba(0,30,60,0.5);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(0,229,255,0.6);
+        border-radius: 12px;
+        transition: background 0.3s;
+    ">Create Event</a>
+
+    <div id="authLinks" style="
+        font-size: 1.2rem;
+        color: #fff;
+        margin-left: 2rem;
+    ">
+      <!-- auth links -->
+    </div>
+  </nav>
+
+  <div id="menu-bars" class="fas fa-bars" style="
+      font-size: 1.6rem;
+      color: #fff;
+      cursor: pointer;
+      margin-left: 1rem;
+  "></div>
+</header>
+
+
+<section class="home" id="home">
+    <div class="content">
+        <h3>Event <span>Finder </span></h3>
+        <a href="#contact" class="btn">contact us</a>
+    </div>
+    <div class="swiper-container home-slider">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="images/new.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/2.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/G2.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/Dj.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/slide-5.jpg" alt=""></div>
+            <div class="swiper-slide"><img src="images/3.jpg" alt=""></div>
+        </div>
+    </div>
+</section>
+
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </div>
+</div>
+
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Sign Up</h2>
+        <form id="signupForm">
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+    </div>
+</div>
+
+<div id="createEventModal" class="modal">
+    <div class="modal-content">
+        <span class="close">×</span>
+        <h2>Create Event</h2>
+        <form id="createEventForm">
+            <input type="text" placeholder="Event Title" required>
+            <input type="date" required>
+            <input type="text" placeholder="Category" required>
+            <input type="text" placeholder="Location" required>
+            <textarea placeholder="Description" required></textarea>
+            <input type="file" accept="image/*">
+            <button type="submit" class="btn">Create Event</button>
+        </form>
+    </div>
+</div>
+
+<section class="service" id="service">
+    <h1 class="heading"> Upcoming <span>Events</span> </h1>
+    <div class="box-container" id="upcomingEvents"></div>
+</section>
+
+<section class="about" id="about">
+    <h1 class="heading"><span>about</span> us </h1>
+    <div class="row">
+        <div class="image">
+            <img src="images/Ab.jpg" alt="">
+        </div>
+        <div class="content">
+            <h3>We’re planning a truly special celebration just for you</h3>
+            <p>a moment filled with joy, gratitude, and unforgettable memories</p>
+            <p>Get ready to be celebrated like never before! 🎉✨</p>
+            <a href="#contact" class="btn">contact us</a>
+        </div>
+    </div>
+</section>
+
+<section class="gallery" id="gallery">
+    <h1 class="heading">Featured <span>Events</span></h1>
+    <div class="box-container" id="featuredEvents"></div>
+</section>
+
+<section class="contact" id="contact">
+    <h1 class="heading"> <span>contact</span> us </h1>
+    <form action="https://formsubmit.co/hunainsualeh8@gmail.com" method="POST">
+        <!-- FormSubmit hides the honeypot field -->
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="box">
+        <div class="inputBox">
+            <input type="text" name="name" placeholder="name" required>
+            <input type="email" name="email" placeholder="email" required>
+        </div>
+        <div class="inputBox">
+            <input type="number" name="number" placeholder="number" required>
+            <input type="text" name="subject" placeholder="subject" required>
+        </div>
+        <textarea name="message" placeholder="your message" cols="30" rows="10" required></textarea>
+        <input type="submit" value="send message" class="btn">
+    </form>
+</section>
+
+<section class="footer" style="background:#111; color:#fff; padding:10px 20px; font-family:Arial, sans-serif; font-size:14px;">
+  <div class="box-container" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap;">
+    
+    <div class="box" style="flex:1; min-width:200px; margin-right:20px;">
+      <h3 style="font-size:16px; margin-bottom:10px; color:#f5f5f5;">quick links</h3>
+      <a href="#" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+        <i class="fas fa-arrow-right" style="margin-right:5px;"></i>home</a>
+      <a href="#" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+        <i class="fas fa-arrow-right" style="margin-right:5px;"></i>service</a>
+      <a href="#" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+        <i class="fas fa-arrow-right" style="margin-right:5px;"></i>about</a>
+      <a href="#" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+        <i class="fas fa-arrow-right" style="margin-right:5px;"></i>gallery</a>
+      <a href="#" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+        <i class="fas fa-arrow-right" style="margin-right:5px;"></i>contact</a>
+    </div>
+
+    <div class="box" style="flex:1; min-width:200px;">
+  <h3 style="font-size:16px; margin-bottom:10px; color:#f5f5f5;">follow us</h3>
+  <a href="https://www.instagram.com/" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+    <i class="fab fa-instagram" style="margin-right:5px;"></i>instagram</a>
+  <a href="https://www.linkedin.com/in/hunain-sualeh/" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+    <i class="fab fa-linkedin" style="margin-right:5px;"></i>linkedin</a>
+  <a href="https://github.com/Hunainsualeh" style="display:inline-block; margin:2px 10px 2px 0; color:#aaa; text-decoration:none;">
+    <i class="fab fa-github" style="margin-right:5px;"></i>github</a>
+</div>
+
+    
+  </div>
+  <div class="credit" style="text-align:center; padding-top:10px; font-size:13px; color:#888;">
+    created by <span style="color:#fff; font-weight:bold;">hunainsualeh</span> | all rights reserved
+  </div>
+</section>
+
+
+<div class="theme-toggler">
+    <div class="toggle-btn">
+        <i class="fas fa-cog"></i>
+    </div>
+    <h3>choose color</h3>
+    <div class="buttons">
+        <div class="theme-btn" style="background: #3867d6;"></div>
+        <div class="theme-btn" style="background: #f7b731;"></div>
+        <div class="theme-btn" style="background: #ff0033;"></div>
+        <div class="theme-btn" style="background: #20bf6b;"></div>
+        <div class="theme-btn" style="background: #fa8231;"></div>
+        <div class="theme-btn" style="background: #FC427B;"></div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script src="js/script.js"></script>
+<script>
+    function getEvents() {
+        const events = localStorage.getItem('events');
+        return events ? JSON.parse(events) : [];
+    }
+
+    function displayUpcomingEvents() {
+        const events = getEvents();
+        const container = document.getElementById('upcomingEvents');
+        if (events.length === 0) {
+            container.innerHTML = '<p style="color: #eee; font-size: 1.6rem;">No upcoming events.</p>';
+        } else {
+            container.innerHTML = '';
+            events.forEach(event => {
+                const box = document.createElement('div');
+                box.classList.add('box');
+                box.innerHTML = `
+                    <h3>${event.name}</h3>
+                    <p>Date: ${event.date} Time: ${event.time}</p>
+                    <p>${event.description.substring(0, 100)}...</p>
+                    <a href="event-details.html?id=${event.id}" class="btn">View Details</a>
+                `;
+                container.appendChild(box);
+            });
+        }
+    }
+
+    function displayFeaturedEvents() {
+        const events = getEvents().filter(event => event.featured);
+        const container = document.getElementById('featuredEvents');
+        if (events.length === 0) {
+            container.innerHTML = '<p style="color: #eee; font-size: 1.6rem;">No featured events.</p>';
+        } else {
+            container.innerHTML = '';
+            events.forEach(event => {
+                const box = document.createElement('div');
+                box.classList.add('box');
+                const imageUrl = event.images[0] || 'images/default.jpg';
+                box.innerHTML = `
+                    <img src="${imageUrl}" alt="${event.name}">
+                    <h3 class="title">${event.name}</h3>
+                    <div class="icons">
+                        <a href="#" class="fas fa-heart"></a>
+                        <a href="#" class="fas fa-share"></a>
+                        <a href="event-details.html?id=${event.id}" class="fas fa-eye"></a>
+                    </div>
+                `;
+                container.appendChild(box);
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        displayUpcomingEvents();
+        displayFeaturedEvents();
+    });
+
+</script>
+ <script>
+    // display the user’s email/name
+    window.addEventListener('load', () => {
+      if (Clerk.user) {
+        document.getElementById('username').textContent = Clerk.user.fullName || Clerk.user.emailAddress;
+      }
+    });
+  </script>
+</body>
+</html>

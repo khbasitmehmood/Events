@@ -1,0 +1,142 @@
+<!-- create-event.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .create-event { padding: 2rem 9%; text-align: center; background: #121212; }
+        .create-event h1 span { color: #1e90ff; }
+        .create-event form { max-width: 70rem; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        .create-event input[type="text"],
+        .create-event input[type="date"],
+        .create-event input[type="time"],
+        .create-event textarea { padding: 1rem; border-radius: 8px; background: #222; color: #ddd; border: 1px solid #333; font-size: 1.6rem; transition: border-color .3s; }
+        .create-event input:focus, .create-event textarea:focus { outline: none; border-color: #1e90ff; }
+        .create-event textarea { resize: vertical; }
+        .create-event label { color: #ccc; display: flex; align-items: center; gap: 0.5rem; }
+        .create-event .btn { padding: 1rem; background: #1e90ff; color: #fff; border: none; font-size: 1.6rem; border-radius: 8px; cursor: pointer; transition: background .3s, transform .2s; }
+        .create-event .btn:hover { background: #0066cc; transform: translateY(-2px); }
+        .additional-images { display: flex; flex-direction: column; gap: 0.75rem; text-align: left; }
+        .additional-images .add-btn { align-self: flex-start; padding: 0.5rem 1rem; background: #28a745; color: #fff; border: none; border-radius: 8px; cursor: pointer; transition: background .3s; }
+        .additional-images .add-btn:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="index.html" class="logo"><span>E</span>vent</a>
+        <nav class="navbar">
+            <a href="index.html#home">Home</a>
+            <a href="index.html#service">Upcoming Events</a>
+            <a href="index.html#gallery">Featured</a>
+            <a href="create-event.html">Create Event</a>
+            <div id="authLinks"></div>
+        </nav>
+        <div id="menu-bars" class="fas fa-bars"></div>
+    </header>
+    <section class="create-event">
+        <h1 class="heading">Create <span>Event</span></h1>
+        <form id="eventForm">
+            <input type="text" placeholder="Event Name" required>
+            <input type="date" required>
+            <input type="time" required>
+            <textarea placeholder="Description" required></textarea>
+            <!-- Thumbnail upload -->
+            <label>
+                <i class="fas fa-image"></i> Thumbnail:
+                <input type="file" id="thumbnailInput" accept="image/*" required>
+            </label>
+            <!-- Dynamic additional images -->
+            <div class="additional-images">
+                <label><i class="fas fa-photo-video"></i> Gallery Images:</label>
+                <div id="imageInputs">
+                    <input type="file" class="galleryInput" accept="image/*">
+                </div>
+                <button type="button" id="addImageBtn" class="add-btn">+ Add Another Image</button>
+            </div>
+            <label><input type="checkbox"> Featured</label>
+            <button type="submit" class="btn">Create Event</button>
+        </form>
+    </section>
+
+    <script>
+    // IndexedDB setup
+    const dbName = 'EventsDB';
+    const dbVersion = 1;
+    let db;
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, dbVersion);
+        request.onupgradeneeded = e => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('images')) {
+            db.createObjectStore('images', { keyPath: 'id' });
+          }
+        };
+        request.onsuccess = e => {
+          db = e.target.result;
+          resolve();
+        };
+        request.onerror = () => reject(request.error);
+      });
+    }
+
+    function saveImage(blob) {
+      return new Promise(resolve => {
+        const tx = db.transaction('images', 'readwrite');
+        const store = tx.objectStore('images');
+        const id = Date.now().toString() + Math.random();
+        store.put({ id, blob });
+        tx.oncomplete = () => resolve(id);
+      });
+    }
+
+    document.getElementById('addImageBtn').addEventListener('click', () => {
+        const container = document.getElementById('imageInputs');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.className = 'galleryInput';
+        container.appendChild(input);
+    });
+
+    document.getElementById('eventForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await openDB();
+
+        const name = document.querySelector('input[placeholder="Event Name"]').value;
+        const date = document.querySelector('input[type="date"]').value;
+        const time = document.querySelector('input[type="time"]').value;
+        const description = document.querySelector('textarea[placeholder="Description"]').value;
+        const featured = document.querySelector('input[type="checkbox"]').checked;
+        const id = Date.now().toString();
+
+        // Thumbnail
+        const thumbFile = document.getElementById('thumbnailInput').files[0];
+        const thumbId = await saveImage(thumbFile);
+
+        // Gallery images
+        const galleryFiles = Array.from(document.getElementsByClassName('galleryInput'))
+            .map(input => input.files[0])
+            .filter(file => file);
+        const galleryIds = [];
+        for (let file of galleryFiles) {
+          const gid = await saveImage(file);
+          galleryIds.push(gid);
+        }
+
+        const event = { id, name, date, time, description, thumbnailId: thumbId, galleryIds, featured };
+        const events = JSON.parse(localStorage.getItem('events') || '[]');
+        events.push(event);
+        localStorage.setItem('events', JSON.stringify(events));
+        alert('Event created successfully!');
+        window.location.href = 'index.html';
+    });
+    </script>
+</body>
+</html>
